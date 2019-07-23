@@ -3,7 +3,7 @@
 namespace Xigen\ContactAttachment\Rewrite\Magento\Contact\Model;
 
 use Magento\Contact\Model\ConfigInterface;
-use Magento\Framework\Mail\Template\TransportBuilder;
+use Xigen\ContactAttachment\Mail\Template\TransportBuilder;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\ObjectManager;
@@ -16,7 +16,6 @@ use Xigen\ContactAttachment\Mail\Message;
 
 class Mail extends \Magento\Contact\Model\Mail
 {
-
     const FOLDER_LOCATION = 'contactattachment';
 
     /**
@@ -87,7 +86,6 @@ class Mail extends \Magento\Contact\Model\Mail
      */
     public function send($replyTo, array $variables)
     {
-
         $filePath = null;
         $fileName = null;
         $uploaded = false;
@@ -95,7 +93,6 @@ class Mail extends \Magento\Contact\Model\Mail
         $attachment = !empty($_FILES['attachment']) ? $_FILES['attachment']['name'] : null;
 
         if ($attachment) {
-
             $upload = $this->fileUploaderFactory->create(['fileId' => 'attachment']);
             $upload->setAllowRenameFiles(true);
             $upload->setFilesDispersion(true);
@@ -131,49 +128,24 @@ class Mail extends \Magento\Contact\Model\Mail
                 ->getTransport();
 
             if ($uploaded) {
-                $fileAttachment = $this->setAttachment($transport->getMessage(), $filePath);
-                if ($this->dataHelper->versionCompare("2.3")) {
-                    $transport->getMessage()->setBodyAttachment(
-                        $fileAttachment->getContent(),
-                        $fileAttachment->filename,
-                        $fileAttachment->type,
-                        \Zend_Mime::ENCODING_BASE64
-                    );
-                }
+                $fileInfo = pathinfo($path);
+                $filePath = $path;
+                $ext = $fileInfo['extension'] ?? null;
+                $fileName = $fileInfo['filename'] ?? null;
+                $mimeType = mime_content_type($path);
+                $this->transportBuilder->addAttachment(
+                    file_get_contents($filePath),
+                    $fileName,
+                    $ext
+                );
             }
 
             $transport->sendMessage();
+        } catch (Exceptio $e) {
+            echo $e->getMessage();
+            die();
         } finally {
             $this->inlineTranslation->resume();
-        }
-    }
-
-    /**
-     * @param Message $message
-     * @param string $tacPath
-     */
-    private function setAttachment(Message $message, $path)
-    {
-        $fileInfo = pathinfo($path);
-        $filePath = $path;
-        $ext = $fileInfo['extension'] ?? null;
-        $fileName = $fileInfo['filename'] ?? null;
-        $mimeType = mime_content_type($path);
-
-        if ($this->dataHelper->versionCompare("2.3")) {
-            $attachment = new \Zend_Mime_Part(file_get_contents($filePath));
-            $attachment->type = $mimeType;
-            $attachment->disposition = \Zend_Mime::DISPOSITION_ATTACHMENT;
-            $attachment->filename = $fileName . $ext;
-            return $attachment;
-        } else {
-            $message->createAttachment(
-                file_get_contents($filePath),
-                $mimeType,
-                \Zend_Mime::DISPOSITION_ATTACHMENT,
-                \Zend_Mime::ENCODING_BASE64,
-                $fileName . $ext
-            );
         }
     }
 }
