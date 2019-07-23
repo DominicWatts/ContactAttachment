@@ -7,6 +7,9 @@ use Zend\Mime\PartFactory;
 use Zend\Mail\MessageFactory as MailMessageFactory;
 use Zend\Mime\MessageFactory as MimeMessageFactory;
 
+/**
+ * Message class
+ */
 class Message implements \Magento\Framework\Mail\MailMessageInterface
 {
     /**
@@ -32,8 +35,11 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
      * @param \Zend\Mime\MessageFactory $mimeMessageFactory
      * @param string $charset
      */
-    public function __construct(PartFactory $partFactory, MimeMessageFactory $mimeMessageFactory, $charset = 'utf-8')
-    {
+    public function __construct(
+        PartFactory $partFactory,
+        MimeMessageFactory $mimeMessageFactory,
+        $charset = 'utf-8'
+    ) {
         $this->partFactory = $partFactory;
         $this->mimeMessageFactory = $mimeMessageFactory;
         $this->zendMessage = MailMessageFactory::getInstance();

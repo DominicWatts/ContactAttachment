@@ -1,4 +1,4 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Magento\Contact\Model\Mail" type="Xigen\ContactAttachment\Rewrite\Magento\Contact\Model\Mail"/>
     <preference for="Magento\Framework\Mail\Message" type="Xigen\ContactAttachment\Mail\Message"/>
+    <preference for="Magento\Contact\Controller\Index\Post" type="Xigen\ContactAttachment\Rewrite\Magento\Contact\Controller\Index\Post"/>
 </config>

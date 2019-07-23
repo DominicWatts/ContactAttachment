@@ -5,9 +5,10 @@ namespace Xigen\ContactAttachment\Mail\Template;
 class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
 {
     /**
-     * @var \Extait\Attachment\Mail\Message
+     * @var \Xigen\ContactAttachment\Mail\Message
      */
     protected $message;
+    
     /**
      * Add an attachment to the message.
      *
