@@ -22,6 +22,7 @@ class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
         $this->message->setBodyAttachment($content, $fileName, $fileType);
         return $this;
     }
+    
     /**
      * After all parts are set, add them to message body.
      *
@@ -32,6 +33,18 @@ class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
     {
         parent::prepareMessage();
         $this->message->setPartsToBody();
+        return $this;
+    }
+
+    /**
+     * Set mail from address
+     * @param string|array $from
+     * @return $this
+     */
+    public function setFrom($from)
+    {
+        $result = $this->_senderResolver->resolve($from);
+        $this->message->setFrom($result['email'], $result['name']);
         return $this;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Xigen\ContactAttachment\Mail;
 
+use Zend\Mime\Part;
 use Zend\Mime\Mime;
 use Zend\Mime\PartFactory;
 use Zend\Mail\MessageFactory as MailMessageFactory;
@@ -10,24 +11,28 @@ use Zend\Mime\MessageFactory as MimeMessageFactory;
 /**
  * Message class
  */
-class Message implements \Magento\Framework\Mail\MailMessageInterface
+class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MailMessageInterface
 {
     /**
      * @var \Zend\Mime\PartFactory
      */
     protected $partFactory;
+
     /**
      * @var \Zend\Mime\MessageFactory
      */
     protected $mimeMessageFactory;
+
     /**
      * @var \Zend\Mail\Message
      */
     private $zendMessage;
+
     /**
      * @var \Zend\Mime\Part[]
      */
     protected $parts = [];
+
     /**
      * Message constructor.
      *
@@ -44,37 +49,45 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $this->mimeMessageFactory = $mimeMessageFactory;
         $this->zendMessage = MailMessageFactory::getInstance();
         $this->zendMessage->setEncoding($charset);
+        parent::__construct($charset);
     }
+
     /**
      * Add the HTML mime part to the message.
-     *
      * @param string $content
      * @return $this
      */
     public function setBodyText($content)
     {
         $textPart = $this->partFactory->create();
+
         $textPart->setContent($content)
             ->setType(Mime::TYPE_TEXT)
+            ->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE)
             ->setCharset($this->zendMessage->getEncoding());
+
         $this->parts[] = $textPart;
-        return $this;
+        return $this->setBody($content);
     }
+
     /**
      * Add the text mime part to the message.
-     *
      * @param string $content
      * @return $this
      */
     public function setBodyHtml($content)
     {
         $htmlPart = $this->partFactory->create();
+
         $htmlPart->setContent($content)
             ->setType(Mime::TYPE_HTML)
+            ->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE)
             ->setCharset($this->zendMessage->getEncoding());
+
         $this->parts[] = $htmlPart;
-        return $this;
+        return $this->setBody($content);
     }
+
     /**
      * Add the attachment mime part to the message.
      *
@@ -86,14 +99,18 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
     public function setBodyAttachment($content, $fileName, $fileType)
     {
         $attachmentPart = $this->partFactory->create();
+
         $attachmentPart->setContent($content)
             ->setType($fileType)
             ->setFileName($fileName)
             ->setDisposition(Mime::DISPOSITION_ATTACHMENT)
             ->setEncoding(Mime::ENCODING_BASE64);
+
         $this->parts[] = $attachmentPart;
+
         return $this;
     }
+
     /**
      * Set parts to Zend message body.
      *
@@ -104,15 +121,27 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $mimeMessage = $this->mimeMessageFactory->create();
         $mimeMessage->setParts($this->parts);
         $this->zendMessage->setBody($mimeMessage);
+
         return $this;
     }
+
     /**
      * {@inheritdoc}
+     *
+     * @deprecated
+     * @see \Magento\Framework\Mail\Message::setBodyText
+     * @see \Magento\Framework\Mail\Message::setBodyHtml
      */
     public function setBody($body)
     {
+        if (is_string($body)) {
+            $body = $this->createHtmlMimeFromString($body);
+        }
+
+        $this->zendMessage->setBody($body);
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -121,6 +150,26 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $this->zendMessage->setSubject($subject);
         return $this;
     }
+
+    /**
+     * Create HTML mime message from the string.
+     * @param string $htmlBody
+     * @return \Zend\Mime\Message
+     */
+    private function createHtmlMimeFromString($htmlBody)
+    {
+        $htmlPart = new Part($htmlBody);
+        $htmlPart->setCharset($this->zendMessage->getEncoding());
+        $htmlPart->setType(Mime::TYPE_HTML);
+        $mimeMessage = new \Zend\Mime\Message();
+        $mimeMessage->addPart($htmlPart);
+
+        $this->parts[] = $htmlPart;
+
+        return $mimeMessage;
+    }
+
+
     /**
      * {@inheritdoc}
      */
@@ -128,6 +177,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
     {
         return $this->zendMessage->getSubject();
     }
+
     /**
      * {@inheritdoc}
      */
@@ -135,6 +185,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
     {
         return $this->zendMessage->getBody();
     }
+
     /**
      * {@inheritdoc}
      */
@@ -161,6 +212,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $this->zendMessage->addTo($toAddress);
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -169,6 +221,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $this->zendMessage->addCc($ccAddress);
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -177,6 +230,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $this->zendMessage->addBcc($bccAddress);
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -185,6 +239,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
         $this->zendMessage->setReplyTo($replyToAddress);
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -192,6 +247,7 @@ class Message implements \Magento\Framework\Mail\MailMessageInterface
     {
         return $this->zendMessage->toString();
     }
+
     /**
      * @inheritDoc
      */

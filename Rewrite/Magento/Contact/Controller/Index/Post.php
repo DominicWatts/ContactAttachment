@@ -176,7 +176,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
             $upload->setAllowRenameFiles(true);
             $upload->setFilesDispersion(true);
             $upload->setAllowCreateFolders(true);
-            $upload->setAllowedExtensions(['csv', 'jpg', 'jpeg', 'gif', 'png', 'pdf', 'doc', 'docx']);
+            $upload->setAllowedExtensions(['txt', 'csv', 'jpg', 'jpeg', 'gif', 'png', 'pdf', 'doc', 'docx']);
 
             $path = $this->fileSystem
                 ->getDirectoryRead(DirectoryList::MEDIA)
@@ -191,9 +191,10 @@ class Post extends \Magento\Contact\Controller\Index\Post
         $replyToName = !empty($variables['data']['name']) ? $variables['data']['name'] : null;
 
         $this->inlineTranslation->suspend();
+
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
         $transport = $this->transportBuilder
-            ->setTemplateIdentifier($this->scopeConfig->getValue(self::XML_PATH_EMAIL_TEMPLATE, $storeScope))
+            ->setTemplateIdentifier($this->contactsConfig->emailTemplate())
             ->setTemplateOptions(
                 [
                     'area' => Area::AREA_FRONTEND,
@@ -201,23 +202,28 @@ class Post extends \Magento\Contact\Controller\Index\Post
                 ]
             )
             ->setTemplateVars($variables)
-            ->setFrom($this->scopeConfig->getValue(self::XML_PATH_EMAIL_SENDER, $storeScope))
-            ->addTo($this->scopeConfig->getValue(self::XML_PATH_EMAIL_RECIPIENT, $storeScope))
-            ->setReplyTo($replyTo)
+            ->setFrom($this->contactsConfig->emailSender())
+            ->addTo($this->contactsConfig->emailRecipient())
+            ->setReplyTo($replyTo, $replyToName)
             ->getTransport();
 
-        if ($uploaded) {
-            $fileInfo = pathinfo($path);
-            $filePath = $path;
-            $ext = $fileInfo['extension'] ?? null;
-            $fileName = $fileInfo['filename'] ?? null;
-            $mimeType = mime_content_type($path);
+        if ($uploaded && !empty($filePath) && file_exists($filePath)) {
+            $mimeType = mime_content_type($filePath);
 
-            $transport->addAttachment(
-                file_get_contents($filePath),
-                $fileName,
-                $ext
-            );
+            $transport = $this->transportBuilder
+                ->setTemplateIdentifier($this->contactsConfig->emailTemplate())
+                ->setTemplateOptions(
+                    [
+                        'area' => Area::AREA_FRONTEND,
+                        'store' => $this->storeManager->getStore()->getId(),
+                    ]
+                )
+                ->addAttachment(file_get_contents($filePath), $fileName, $mimeType)
+                ->setTemplateVars($variables)
+                ->setFrom($this->contactsConfig->emailSender())
+                ->addTo($this->contactsConfig->emailRecipient())
+                ->setReplyTo($replyTo, $replyToName)
+                ->getTransport();
         }
 
         $transport->sendMessage();
