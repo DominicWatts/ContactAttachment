@@ -173,14 +173,13 @@ class Post extends \Magento\Contact\Controller\Index\Post
         $uploaded = false;
                 
         try {
-            $fileCheck = $this->fileUploaderFactory->create(['fileId' => 'attachment']); 
+            $fileCheck = $this->fileUploaderFactory->create(['fileId' => 'attachment']);
             $file = $fileCheck->validateFile();
             $attachment = $file['name'] ?? null;
         } catch (\Exception $e) {
             $attachment = null;
         }
         
-
         if ($attachment) {
             $upload = $this->fileUploaderFactory->create(['fileId' => 'attachment']);
             $upload->setAllowRenameFiles(true);
