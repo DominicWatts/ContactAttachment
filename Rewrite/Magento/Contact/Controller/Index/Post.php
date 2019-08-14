@@ -20,6 +20,7 @@ use Magento\Framework\DataObject;
 use Magento\MediaStorage\Model\File\UploaderFactory;
 use Xigen\ContactAttachment\Mail\Template\TransportBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Filesystem\Io\File;
 
 /**
  * Post controller class
@@ -101,7 +102,8 @@ class Post extends \Magento\Contact\Controller\Index\Post
         ConfigInterface $contactsConfig,
         TransportBuilder $transportBuilder,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        File $file
     ) {
         $this->context = $context;
         $this->mail = $mail;
@@ -114,6 +116,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
         $this->transportBuilder = $transportBuilder;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
+        $this->file = $file;
         parent::__construct($context, $contactsConfig, $mail, $dataPersistor, $logger);
     }
 
@@ -168,8 +171,15 @@ class Post extends \Magento\Contact\Controller\Index\Post
         $filePath = null;
         $fileName = null;
         $uploaded = false;
-
-        $attachment = !empty($_FILES['attachment']) ? $_FILES['attachment']['name'] : null;
+                
+        try {
+            $fileCheck = $this->fileUploaderFactory->create(['fileId' => 'attachment']); 
+            $file = $fileCheck->validateFile();
+            $attachment = $file['name'] ?? null;
+        } catch (\Exception $e) {
+            $attachment = null;
+        }
+        
 
         if ($attachment) {
             $upload = $this->fileUploaderFactory->create(['fileId' => 'attachment']);
@@ -207,7 +217,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
             ->setReplyTo($replyTo, $replyToName)
             ->getTransport();
 
-        if ($uploaded && !empty($filePath) && file_exists($filePath)) {
+        if ($uploaded && !empty($filePath) && $this->file->fileExists($filePath)) {
             $mimeType = mime_content_type($filePath);
 
             $transport = $this->transportBuilder
@@ -218,7 +228,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
                         'store' => $this->storeManager->getStore()->getId(),
                     ]
                 )
-                ->addAttachment(file_get_contents($filePath), $fileName, $mimeType)
+                ->addAttachment($this->file->read($filePath), $fileName, $mimeType)
                 ->setTemplateVars($variables)
                 ->setFrom($this->contactsConfig->emailSender())
                 ->addTo($this->contactsConfig->emailRecipient())
@@ -247,7 +257,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
             throw new LocalizedException(__('Invalid email address'));
         }
         if (trim($request->getParam('hideit')) !== '') {
-            throw new \Exception();
+            throw new LocalizedException(__('Error'));
         }
 
         return $request->getParams();

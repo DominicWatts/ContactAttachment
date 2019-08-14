@@ -85,7 +85,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             ->setCharset($this->zendMessage->getEncoding());
 
         $this->parts[] = $htmlPart;
-        return $this->setBody($content);
+        // return $this->setBody($content);
     }
 
     /**
@@ -168,7 +168,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
 
         return $mimeMessage;
     }
-
 
     /**
      * {@inheritdoc}
