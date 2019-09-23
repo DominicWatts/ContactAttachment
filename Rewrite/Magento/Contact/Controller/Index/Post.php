@@ -3,7 +3,7 @@
 
 namespace Xigen\ContactAttachment\Rewrite\Magento\Contact\Controller\Index;
 
-use \Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Contact\Model\ConfigInterface;
 use Magento\Contact\Model\MailInterface;
 use Magento\Framework\App\Action\Context;
