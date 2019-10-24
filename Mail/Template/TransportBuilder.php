@@ -2,6 +2,9 @@
 
 namespace Xigen\ContactAttachment\Mail\Template;
 
+/**
+ * TransportBuilder class
+ */
 class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
 {
     /**
