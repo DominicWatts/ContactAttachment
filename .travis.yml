@@ -1,5 +1,7 @@
 sudo: false
 language: php
+services:
+  - docker
 matrix:
   fast_finish: true
   include:
@@ -13,17 +15,8 @@ matrix:
   - php: '5.6'
   - php: nightly
 before_install:
-- echo "{\"http-basic\":{\"repo.magento.com\":{\"username\":\"${MAGENTO_USERNAME}\",\"password\":\"${MAGENTO_PASSWORD}\"}}}" > auth.json
-- if [[ "$SNIFF" == "1" ]]; then composer self-update; fi
-- if [[ "$SNIFF" == "1" ]]; then composer require squizlabs/php_codesniffer; fi
-- if [[ "$SNIFF" == "1" ]]; then composer require magento/magento-coding-standard; fi
-- if [[ "$SNIFF" == "1" ]]; then composer require dealerdirect/phpcodesniffer-composer-installer; fi
-- if [[ "$SNIFF" == "1" ]]; then composer install; fi
+- if [[ "$SNIFF" == "1" ]]; then docker pull domw/phpcs; fi
 - phpenv rehash
 script:
 - find -L . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l
-- if [[ "$SNIFF" == "1" ]]; then php vendor/bin/phpcs --standard=Magento2 --ignore=*/etc/*,*/vendor/* ./; fi
-env:
-  global:
-  - secure: DThQv6QYBba1LxBLrwjk+6EVEP/ToFRV6RrKFeJJ5iKWTjv+bbDrzslZarqH36Jrqx/+putQ8iz4YcJWQJseIwB1ouMVFkif6m9XbS9B1GlVgoS2FrD3BCdKKhjgDDH/8d9dNB2yGGEP/nWp6sLdbJmrGIk6S9YtVI+60DW6ICHG8v1qmjQ/S2J7+Etxs3eVlHXQpfEwHCD80xn2HLNs874ZDeqF1Pwp0AvfYVDArjk1KiMbdhlNGXHPJkPRfpL48fXQ4mvreGle9GxUXevQM7MQm6gNO9Xn4gFsCm1xRzvsVNADzrgmLv3hrxIjFCGC1HJ/p0qchCK1xXwBQk4n3ibkAb3xd5Cf92cZzfcUmQ72mkIiXe/XzdSOv6cQDmHOwgYTylWr2wD1jCBKJSZl/n9IMP028Ct/4b48/aUPIqR/q5hCPXfW13Ur20UOrgZ3AdFa9Ow+yLi9E9StIxRq/xcUWGOmTj6k8PvwTwdSyInTJy/3Gd5hwLE8Ipesow/8+WpvgqceflRwYw+w5+b4yxxGklIz/D87MOkFbdYeTiPnm3EA7UV3t+4w7MLlt3EBE7LLvSIDso5MTws5fqfypbEKZhjpZgmww54t3I/LSxFrXVvszSh82oNKSZm5jd04WZnlu2yySDNymD8tomcXY34MSvOXh085vkS1rVzh3es=
-  - secure: PMVqIsqBOgzT0rtnyjJE631lkmf+0Vi6lj92GCK878RAjDUXoauiCw2WkvSRsnrzTs76EjVVlN4uTgvBi5a/M8qHrKA5a2DYKqIjIGhPzSKODjxTVRtswPXBHIXaY2Gapawdq9dgZkdDHNEde9zYscJwEUyI1+hAmr5dIxSBddzbOqS7lQnlgz1z2KL997t+Gr8KsDr1XwJ1HtHhQNo9ucMZCAbz8+8Z5bsFb/bIEVQW/dhKjYjXnwD+KWVyjatovD1qLGLGyfcqd/BY6KUaBlCW6Cx/sx2hZifuPCHnDnB+17rMzi5Y98BZvqL3yxPc882rMa0JlczdQBfQT5UwOoCENcU/2mkj97EL2OEzUTta9g4ClC9AKZPw3QZ6rY+c0OB3aum7G+4osIDlTmu18lQInSqpeRvcdHswRguk5uRc6hweuAl6IiXXRDbFP7Z1w3k6m2Kz5HTS+74vhP0wopCd7iU2eaUBhho6w6Etdlonye/gspm6AjNgL5VETjFJrGHFnSvU586vtILKA+dWO9YaUjrsPyaAn++a4bmgJ6q790PAUJi01EVuwfDUEBVslZa15rj59g7U4h82uesJSrU6NWlsvV5lFxdighkIQ8B6DpIRy7vz0giL0nAhCSDjXttUr19DVGXqp9tlgAkvhtrbaLJfelQEP5V63XXzcco=
+- if [[ "$SNIFF" == "1" ]]; then docker run --rm -v $PWD:/code:ro domw/phpcs phpcs --colors --standard=Magento2 --report=full,summary,gitblame --extensions=php,phtml ./; fi
