@@ -26,7 +26,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     /**
      * @var \Zend\Mail\Message
      */
-    private $zendMessage;
+    protected $zendMessage;
 
     /**
      * @var \Zend\Mime\Part[]
