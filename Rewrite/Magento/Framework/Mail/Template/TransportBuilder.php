@@ -413,10 +413,12 @@ class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
             ['parts' => $parts]
         );
  
+        // phpcs:disable
         $this->messageData['subject'] = html_entity_decode(
             (string)$template->getSubject(),
             ENT_QUOTES
         );
+        // phpcs:enable
         $this->message = $this->emailMessageInterfaceFactory->create($this->messageData);
  
         return $this;
