@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Xigen\ContactAttachment\Rewrite\Magento\Contact\Controller\Index;
 
 use Magento\Store\Model\StoreManagerInterface;
@@ -18,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
 use Magento\MediaStorage\Model\File\UploaderFactory;
-use Xigen\ContactAttachment\Mail\Template\TransportBuilder;
+use Xigen\ContactAttachment\Rewrite\Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Filesystem\Io\File;
 
