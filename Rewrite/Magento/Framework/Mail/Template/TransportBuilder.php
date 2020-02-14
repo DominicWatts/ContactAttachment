@@ -1,7 +1,7 @@
 <?php
  
 namespace Xigen\ContactAttachment\Rewrite\Magento\Framework\Mail\Template;
- 
+
 use Magento\Framework\App\TemplateTypesInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\MailException;
@@ -23,7 +23,7 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Phrase;
 use Zend\Mime\Mime;
 use Zend\Mime\PartFactory;
- 
+
 /**
  * TransportBuilder
  *
@@ -173,8 +173,18 @@ class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
         $this->addressConverter = $addressConverter ?: $this->objectManager
             ->get(AddressConverter::class);
         $this->partFactory = $objectManager->get(PartFactory::class);
-        parent::__construct($templateFactory, $message, $senderResolver, $objectManager, $mailTransportFactory, $messageFactory, $emailMessageInterfaceFactory, $mimeMessageInterfaceFactory,
-            $mimePartInterfaceFactory, $addressConverter);
+        parent::__construct(
+            $templateFactory,
+            $message,
+            $senderResolver,
+            $objectManager,
+            $mailTransportFactory,
+            $messageFactory,
+            $emailMessageInterfaceFactory,
+            $mimeMessageInterfaceFactory,
+            $mimePartInterfaceFactory,
+            $addressConverter
+        );
     }
  
     /**
