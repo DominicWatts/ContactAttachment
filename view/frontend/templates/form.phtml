@@ -8,12 +8,12 @@
 /** @var \Magento\Contact\Block\ContactForm $block */
 ?>
 <form class="form contact"
-        action="<?= $block->escapeUrl($block->getFormAction()) ?>"
-        id="contact-form"
-        method="post"
-        data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
-        data-mage-init='{"validation":{}}'
-        enctype="multipart/form-data">
+      action="<?= $block->escapeUrl($block->getFormAction()) ?>"
+      id="contact-form"
+      method="post"
+      data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+      data-mage-init='{"validation":{}}'
+      enctype="multipart/form-data">
     <fieldset class="fieldset">
         <legend class="legend"><span><?= $block->escapeHtml(__('Write Us')) ?></span></legend>
         <br/>

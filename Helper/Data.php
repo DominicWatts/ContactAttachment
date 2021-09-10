@@ -5,6 +5,7 @@ namespace Xigen\ContactAttachment\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\Helper\Context;
 
 /**
  * Class Data
@@ -21,7 +22,7 @@ class Data extends AbstractHelper
      * @param \Magento\Framework\App\Helper\Context $context
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
+        Context $context,
         ObjectManagerInterface $objectManager
     ) {
         $this->objectManager = $objectManager;
