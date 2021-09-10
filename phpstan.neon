@@ -1,0 +1,13 @@
+parameters:
+    level: 0
+    autoload_directories:
+        - Helper
+        - Rewrite
+    excludes_analyse:
+        - 'vendor'
+    ignoreErrors:
+        - '#invalid typehint#'
+        - '#unknown class#'
+        - '#return statement is missing#'
+        - '#Factory#'
+    reportUnmatchedIgnoredErrors: false

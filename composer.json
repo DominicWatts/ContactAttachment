@@ -3,7 +3,7 @@
     "description": "Magento 2 field and functionality to attach files to the contact form",
     "type": "magento2-module",
     "license": "proprietary",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "authors": [
         {
             "name": "Dominic Xigen",
@@ -19,7 +19,10 @@
     ],
     "require": {
         "magento/framework": "*",
-        "php": "~7.0.0||~7.1.0||~7.2.0||~7.3.0"
+        "magento/module-catalog": "*",
+        "magento/module-contact": "*",
+        "magento/module-store": "*",
+        "php": ">=7.1.0"
     },
     "autoload": {
         "files": [

@@ -3,7 +3,11 @@
     <body>
         <referenceBlock name="contactForm" remove="true"/>
         <referenceContainer name="content">
-            <block class="Magento\Contact\Block\ContactForm" name="xigen.contact.attachment" template="Xigen_ContactAttachment::form.phtml"/>
+            <block class="Magento\Contact\Block\ContactForm" 
+                   name="xigen.contact.attachment" 
+                   template="Xigen_ContactAttachment::form.phtml">
+                <container name="form.additional.info" label="Form Additional Info"/>
+            <block>
         </referenceContainer>
     </body>
 </page>

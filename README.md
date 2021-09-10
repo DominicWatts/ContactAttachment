@@ -2,6 +2,14 @@
 
 Field to attach files to the contact form.
 
+![phpcs](https://github.com/DominicWatts/ContactAttachment/workflows/phpcs/badge.svg)
+
+![PHPCompatibility](https://github.com/DominicWatts/ContactAttachment/workflows/PHPCompatibility/badge.svg)
+
+![PHPStan](https://github.com/DominicWatts/ContactAttachment/workflows/PHPStan/badge.svg)
+
+![php-cs-fixer](https://github.com/DominicWatts/ContactAttachment/workflows/php-cs-fixer/badge.svg)
+
 # Install instructions #
 
 `composer require dominicwatts/contactattachment`
