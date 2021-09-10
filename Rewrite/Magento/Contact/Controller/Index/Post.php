@@ -2,24 +2,24 @@
 
 namespace Xigen\ContactAttachment\Rewrite\Magento\Contact\Controller\Index;
 
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Contact\Model\ConfigInterface;
 use Magento\Contact\Model\MailInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Area;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem;
-use Magento\Framework\Translate\Inline\StateInterface;
-use Psr\Log\LoggerInterface;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\DataObject;
-use Magento\MediaStorage\Model\File\UploaderFactory;
-use Xigen\ContactAttachment\Rewrite\Magento\Framework\Mail\Template\TransportBuilder;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Filesystem\Io\File;
+use Magento\Framework\Translate\Inline\StateInterface;
+use Magento\MediaStorage\Model\File\UploaderFactory;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+use Xigen\ContactAttachment\Rewrite\Magento\Framework\Mail\Template\TransportBuilder;
 
 /**
  * Post controller class
@@ -79,16 +79,28 @@ class Post extends \Magento\Contact\Controller\Index\Post
     private $storeManager;
 
     /**
-     * Post constructor.
-     * @param Context $context
-     * @param MailInterface $mail
-     * @param DataPersistorInterface $dataPersistor
-     * @param LoggerInterface|null $logger
-     * @param UploaderFactory $fileUploaderFactory
-     * @param Filesystem $fileSystem
-     * @param StateInterface $inlineTranslation
-     * @param ConfigInterface $contactsConfig
-     * @param TransportBuilder $transportBuilder
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $file;
+
+    /**
+     * @var \Magento\Framework\Filesystem\Io\File
+     */
+    protected $scopeConfig;
+
+    /**
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Contact\Model\MailInterface $mail
+     * @param \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor
+     * @param \Psr\Log\LoggerInterface|null $logger
+     * @param \Magento\MediaStorage\Model\File\UploaderFactory $fileUploaderFactory
+     * @param \Magento\Framework\Filesystem $fileSystem
+     * @param \Magento\Framework\Translate\Inline\StateInterface $inlineTranslation
+     * @param \Magento\Contact\Model\ConfigInterface $contactsConfig
+     * @param \Xigen\ContactAttachment\Rewrite\Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Filesystem\Io\File $file
      */
     public function __construct(
         Context $context,
@@ -170,7 +182,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
         $filePath = null;
         $fileName = null;
         $uploaded = false;
-                
+
         try {
             $fileCheck = $this->fileUploaderFactory->create(['fileId' => 'attachment']);
             $file = $fileCheck->validateFile();
@@ -178,7 +190,7 @@ class Post extends \Magento\Contact\Controller\Index\Post
         } catch (\Exception $e) {
             $attachment = null;
         }
-        
+
         if ($attachment) {
             $upload = $this->fileUploaderFactory->create(['fileId' => 'attachment']);
             $upload->setAllowRenameFiles(true);
