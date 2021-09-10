@@ -9,4 +9,5 @@ parameters:
         - '#invalid typehint#'
         - '#unknown class#'
         - '#return statement is missing#'
+        - '#Factory#'
     reportUnmatchedIgnoredErrors: false
