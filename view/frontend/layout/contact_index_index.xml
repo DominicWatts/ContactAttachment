@@ -7,7 +7,7 @@
                    name="xigen.contact.attachment" 
                    template="Xigen_ContactAttachment::form.phtml">
                 <container name="form.additional.info" label="Form Additional Info"/>
-            <block>
+            </block>
         </referenceContainer>
     </body>
 </page>
